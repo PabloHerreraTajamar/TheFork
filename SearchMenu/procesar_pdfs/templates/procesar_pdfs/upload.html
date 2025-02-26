@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Subir PDF</title>
+</head>
+<body>
+    <h1>Subir PDF</h1>
+    <form action="{% url 'procesar_pdf' %}" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <input type="file" name="pdf" required>
+        <button type="submit">Procesar PDF</button>
+    </form>
+
+    {% if resultado %}
+    <h2>Resultado:</h2>
+    <pre>{{ resultado }}</pre>
+    {% endif %}
+</body>
+</html>
