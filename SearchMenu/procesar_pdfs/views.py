@@ -108,32 +108,3 @@ def procesar_pdf(request):
 
     return render(request, "procesar_pdfs/upload.html", {"resultado": resultado})
 
-from django.shortcuts import render, redirect
-from django.contrib.auth import login
-from .forms import ConsumidorRegisterForm, RestauranteRegisterForm
-
-def register_consumidor(request):
-    if request.method == 'POST':
-        form = ConsumidorRegisterForm(request.POST)
-        if form.is_valid():
-            user = form.save(commit=False)
-            user.role = 'consumidor'
-            user.save()
-            login(request, user)
-            return redirect('dashboard_consumidor')  # Redirige al dashboard de consumidores
-    else:
-        form = ConsumidorRegisterForm()
-    return render(request, 'register_consumidor.html', {'form': form})
-
-def register_restaurante(request):
-    if request.method == 'POST':
-        form = RestauranteRegisterForm(request.POST)
-        if form.is_valid():
-            user = form.save(commit=False)
-            user.role = 'restaurante'
-            user.save()
-            login(request, user)
-            return redirect('dashboard_restaurante')  # Redirige al dashboard de restaurantes
-    else:
-        form = RestauranteRegisterForm()
-    return render(request, 'register_restaurante.html', {'form': form})

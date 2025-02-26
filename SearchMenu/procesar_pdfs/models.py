@@ -1,14 +1,18 @@
-from django.contrib.auth.models import AbstractUser
 from django.db import models
+from django.contrib.auth.models import User
 
-class CustomUser(AbstractUser):
-    ROLE_CHOICES = [
-        ('consumidor', 'Consumidor'),
-        ('restaurante', 'Restaurante'),
-    ]
-    
-    role = models.CharField(max_length=20, choices=ROLE_CHOICES)
-    nombre_restaurante = models.CharField(max_length=100, blank=True, null=True)  # Solo para restaurantes
+
+class Restaurant(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    name = models.CharField(max_length=100)
 
     def __str__(self):
-        return self.username
+        return self.name
+
+class Menu(models.Model):
+    restaurant = models.ForeignKey(Restaurant, on_delete=models.CASCADE)
+    name = models.CharField(max_length=100)
+    price = models.DecimalField(max_digits=10, decimal_places=2)
+    
+    def __str__(self):
+        return f'{self.restaurant} - {self.name}'
