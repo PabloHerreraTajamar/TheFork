@@ -1,18 +1,32 @@
 from django.db import models
-from django.contrib.auth.models import User
 
-
-class Restaurant(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
-    name = models.CharField(max_length=100)
+class Restaurante(models.Model):
+    nombre = models.CharField(max_length=100)
 
     def __str__(self):
-        return self.name
+        return self.nombre
+
 
 class Menu(models.Model):
-    restaurant = models.ForeignKey(Restaurant, on_delete=models.CASCADE)
-    name = models.CharField(max_length=100)
-    price = models.DecimalField(max_digits=10, decimal_places=2)
-    
+    restaurante = models.ForeignKey(Restaurante, on_delete=models.CASCADE)
+    nombre_menu = models.CharField(max_length=100, default="Menú del día")
+    precio = models.DecimalField(max_digits=6, decimal_places=2)
+
     def __str__(self):
-        return f'{self.restaurant} - {self.name}'
+        # Muestra algo como: "Menú del día (Restaurante XYZ)"
+        return f"{self.nombre_menu} ({self.restaurante.nombre})"
+
+
+class Plato(models.Model):
+    TIPO_PLATO_CHOICES = [
+        ('PRIMERO', 'Primero'),
+        ('SEGUNDO', 'Segundo'),
+        ('POSTRE', 'Postre'),
+    ]
+
+    menu = models.ForeignKey(Menu, on_delete=models.CASCADE, related_name='platos')
+    nombre_plato = models.CharField(max_length=100)
+    tipo_plato = models.CharField(max_length=7, choices=TIPO_PLATO_CHOICES)
+
+    def __str__(self):
+        return f"{self.nombre_plato} - {self.get_tipo_plato_display()}"

@@ -4,17 +4,21 @@ import os
 import json
 import re
 from django.conf import settings
+from .models import Restaurante, Menu, Plato
+
 from azure.ai.formrecognizer import DocumentAnalysisClient
 from azure.core.credentials import AzureKeyCredential
 from openai import AzureOpenAI
 
-# Inicializar el cliente de Document Intelligence
+def home(request):
+    """Vista de la página principal con un botón para subir PDFs."""
+    return render(request, "procesar_pdfs/home.html")
+
 document_analysis_client = DocumentAnalysisClient(
     endpoint=settings.AZURE_FORM_RECOGNIZER_ENDPOINT,
     credential=AzureKeyCredential(settings.AZURE_FORM_RECOGNIZER_KEY)
 )
 
-# Inicializar el cliente de Azure OpenAI
 client = AzureOpenAI(
     azure_endpoint=settings.AZURE_OPENAI_ENDPOINT,
     api_key=settings.AZURE_OPENAI_API_KEY,
@@ -67,7 +71,6 @@ def interpret_menu_text(text):
         ]
     )
 
-    # Obtener la respuesta y convertirla a JSON
     response_text = response.choices[0].message.content
     try:
         menu_info = json.loads(response_text)
@@ -102,9 +105,57 @@ def procesar_pdf(request):
         os.remove(pdf_path)
 
         if menu_info:
+            # -- GUARDAR EN LA BASE DE DATOS --
+            nombre_restaurante = menu_info.get("nombre_restaurante", "Desconocido")
+            primeros_platos = menu_info.get("primeros_platos", [])
+            segundos_platos = menu_info.get("segundos_platos", [])
+            postres = menu_info.get("postres", [])
+            precio_str = menu_info.get("precio", "0")
+
+            # Convertir el precio extraído a decimal o float
+            # Ejemplo simple: buscar la primera coincidencia numérica
+            match = re.search(r"(\d+(?:\.\d+)?)", precio_str)
+            if match:
+                precio_valor = float(match.group(1))
+            else:
+                precio_valor = 0.0
+
+            # Crear o recuperar el restaurante
+            restaurante_obj, _ = Restaurante.objects.get_or_create(nombre=nombre_restaurante)
+
+            # Crear el menú
+            menu_obj = Menu.objects.create(
+                restaurante=restaurante_obj,
+                nombre_menu="Menú del día",
+                precio=precio_valor
+            )
+
+            # Crear platos
+            for plato in primeros_platos:
+                Plato.objects.create(
+                    menu=menu_obj,
+                    nombre_plato=plato,
+                    tipo_plato='PRIMERO'
+                )
+
+            for plato in segundos_platos:
+                Plato.objects.create(
+                    menu=menu_obj,
+                    nombre_plato=plato,
+                    tipo_plato='SEGUNDO'
+                )
+
+            for plato in postres:
+                Plato.objects.create(
+                    menu=menu_obj,
+                    nombre_plato=plato,
+                    tipo_plato='POSTRE'
+                )
+
+            # ----------------------------------------------------
+
             resultado = json.dumps(menu_info, indent=4, ensure_ascii=False)
         else:
             resultado = "Error: No se pudo extraer información válida."
 
     return render(request, "procesar_pdfs/upload.html", {"resultado": resultado})
-
