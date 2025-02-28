@@ -1,19 +1,131 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
+    <meta charset="UTF-8">
     <title>Subir PDF</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f9f9f9;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 600px;
+            margin: 50px auto;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            padding: 30px;
+            text-align: center;
+        }
+        h1 {
+            color: #333;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        input[type="file"] {
+            padding: 10px;
+        }
+        button {
+            background: #007bff;
+            color: #fff;
+            border: none;
+            padding: 10px;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        .result-card {
+            margin-top: 30px;
+            background: #f4f4f4;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: left;
+            box-shadow: 0 0 5px rgba(0,0,0,0.1);
+        }
+        .result-card h2 {
+            margin-top: 0;
+        }
+        .menu-section {
+            margin-bottom: 10px;
+        }
+        .menu-section strong {
+            color: #007bff;
+        }
+        .back-button {
+            display: block;
+            margin-top: 20px;
+            text-decoration: none;
+            background: #28a745;
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            text-align: center;
+        }
+        .back-button:hover {
+            background: #218838;
+        }
+        @media (max-width: 600px) {
+            .container {
+                margin: 20px;
+                padding: 20px;
+            }
+        }
+    </style>
 </head>
 <body>
-    <h1>Subir PDF</h1>
-    <form action="{% url 'procesar_pdf' %}" method="post" enctype="multipart/form-data">
-        {% csrf_token %}
-        <input type="file" name="pdf" required>
-        <button type="submit">Procesar PDF</button>
-    </form>
+    <div class="container">
+        <h1>Subir PDF</h1>
+        <form action="{% url 'procesar_pdf' %}" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <input type="file" name="pdf" required>
+            <button type="submit">Procesar PDF</button>
+        </form>
+        
+        {% if resultado %}
+        <div class="result-card">
+            <h2>Resultado del Menú</h2>
+            <p><strong>Restaurante:</strong> {{ resultado.nombre_restaurante }}</p>
+            <p><strong>Precio:</strong> {{ resultado.precio }}</p>
 
-    {% if resultado %}
-    <h2>Resultado:</h2>
-    <pre>{{ resultado }}</pre>
-    {% endif %}
+            <div class="menu-section">
+                <strong>Primeros platos:</strong>
+                <ul>
+                    {% for plato in resultado.primeros_platos %}
+                        <li>{{ plato }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+
+            <div class="menu-section">
+                <strong>Segundos platos:</strong>
+                <ul>
+                    {% for plato in resultado.segundos_platos %}
+                        <li>{{ plato }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+
+            <div class="menu-section">
+                <strong>Postres:</strong>
+                <ul>
+                    {% for plato in resultado.postres %}
+                        <li>{{ plato }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+        {% endif %}
+
+        <a href="{% url 'home' %}" class="back-button">Volver a la página principal</a>
+    </div>
 </body>
 </html>

@@ -18,7 +18,7 @@
             border-radius: 10px;
             box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
         }
-        a {
+        a.button {
             text-decoration: none;
             background-color: #007bff;
             color: white;
@@ -28,8 +28,9 @@
             border-radius: 5px;
             display: inline-block;
             margin-top: 10px;
+            margin-right: 5px;
         }
-        a:hover {
+        a.button:hover {
             background-color: #0056b3;
         }
     </style>
@@ -38,8 +39,9 @@
 
     <div class="container">
         <h2>Bienvenido</h2>
-        <p>Haz clic en el botón para subir un menú en PDF.</p>
-        <a href="{% url 'procesar_pdf' %}">Subir PDF</a>
+        <p>Elige una opción:</p>
+        <a href="{% url 'procesar_pdf' %}" class="button">Subir PDF</a>
+        <a href="{% url 'search_dishes' %}" class="button">Buscar Platos</a>
     </div>
 
 </body>

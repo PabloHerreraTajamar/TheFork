@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Buscar Platos</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      background: #f9f9f9;
+    }
+    .search-container {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    .search-container input[type="text"] {
+      width: 300px;
+      padding: 10px;
+      font-size: 16px;
+    }
+    .search-container button {
+      padding: 10px 15px;
+      font-size: 16px;
+      background-color: #007bff;
+      border: none;
+      color: white;
+      cursor: pointer;
+      border-radius: 5px;
+      margin-left: 5px;
+    }
+    .search-container button:hover {
+      background-color: #0056b3;
+    }
+    .cards-container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .card {
+      background: white;
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      padding: 15px;
+      margin: 10px;
+      width: 300px;
+      box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    }
+    .card h3 {
+      margin-top: 0;
+    }
+    .card p {
+      margin: 5px 0;
+    }
+    .dish-group h4 {
+      margin: 10px 0 5px;
+      color: #333;
+    }
+    .dish-group ul {
+      list-style-type: disc;
+      margin: 0 0 10px 20px;
+      padding: 0;
+    }
+    .back-link {
+      text-align: center;
+      margin-top: 20px;
+    }
+    .back-link a {
+      text-decoration: none;
+      color: #007bff;
+    }
+    .back-link a:hover {
+      text-decoration: underline;
+    }
+    .show-all-container {
+      text-align: center;
+      margin-top: 15px;
+    }
+  </style>
+</head>
+<body>
+  <div class="search-container">
+    <h2>Buscar Platos</h2>
+    <form method="get" action="{% url 'search_dishes' %}">
+      <input type="text" name="q" placeholder="Nombre del plato" value="{{ query }}">
+      <button type="submit">Buscar</button>
+    </form>
+
+    <!-- Botón para mostrar todos los menús -->
+    <div class="show-all-container">
+      <form method="get" action="{% url 'search_dishes' %}">
+        <input type="hidden" name="show_all" value="true">
+        <button type="submit">Mostrar Todos los Menús</button>
+      </form>
+    </div>
+  </div>
+
+  <div class="cards-container">
+    {% if results %}
+      {% for menu in results %}
+        <div class="card">
+          <h3>{{ menu.menu_name }}</h3>
+          <p><strong>Restaurante:</strong> {{ menu.restaurant_name }}</p>
+          <p><strong>Precio:</strong> €{{ menu.menu_price }}</p>
+          <div class="dish-group">
+            {% for dish_type, dishes in menu.dishes.items %}
+              {% if dishes %}
+                <h4>{{ dish_type }}</h4>
+                <ul>
+                  {% for dish in dishes %}
+                    <li>{{ dish }}</li>
+                  {% endfor %}
+                </ul>
+              {% endif %}
+            {% endfor %}
+          </div>
+        </div>
+      {% endfor %}
+    {% else %}
+      {% if query or show_all %}
+        <p style="text-align: center;">No se encontraron menús disponibles.</p>
+      {% endif %}
+    {% endif %}
+  </div>
+
+  <div class="back-link">
+    <a href="{% url 'home' %}">Volver a la página principal</a>
+  </div>
+</body>
+</html>
