@@ -1,6 +1,6 @@
 # TheFork
 
-Repositorio de prácticas y desarrollo web enfocado en la plataforma de reservas de restaurantes **TheFork**. Este proyecto forma parte del aprendizaje en desarrollo full stack, integrando tecnologías modernas y servicios en la nube para la creación de aplicaciones web inteligentes.
+Repositorio de prácticas y desarrollo web enfocado en la plataforma de reservas de restaurantes **TheFork**. Este proyecto forma parte del aprendizaje de machine learning, integrando tecnologías modernas y servicios en la nube para la creación de aplicaciones web inteligentes.
 
 ## 📂 Estructura del Proyecto
 
